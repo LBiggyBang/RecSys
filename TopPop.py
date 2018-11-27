@@ -16,18 +16,19 @@ interactionsCSV = "train.csv"
 # csv file for tracks, used to get the number of tracks
 tracksCSV = "tracks.csv"
 #extracting the interactions into a list
-interationsList = CSVinteraction.fromCSVtoList(interactionsCSV)
+interactionsList = CSVinteraction.fromCSVtoList(interactionsCSV)
 
 
 ##########
 # creation of the binarized and summed URM
 
-# emptu URM
-urm = []*(CSVinteraction.getCSVtotalRows(tracksCSV) - 1)              
+# empty URM
+urm = [0] * (CSVinteraction.getCSVtotalRows(tracksCSV) - 1)      
 
 # summinng the encounters of each track in the playlists
-for index in range(1, len(interationsList)) :
-    urm[interationsList[1]] += 1
+for index in range(1, len(interactionsList)) :
+    
+    urm[int(interactionsList[index][1])] += 1
 
 
 ##########
@@ -50,29 +51,23 @@ for track in range(10, len(urm)) :
             ranking += 1
     
 # putting the list into the right order
-finalTopPop = []*10
+finalTopPop = [0]*10
 for index in range(0, 10) :
     finalTopPop[index] = topPop[9 - index]
 
-##########○
+
+##########
 # establishing the csv file for submissions
 
 # transforming the list of recommendations into a unique string
-recommendationsString = 
-fs = open(submissions, 'w+', newline='')
-crt = csv.reader(ft)
-crs = csv.writer(fs)
+recommendationsString = formatting.fromListToString(finalTopPop)
 
-isFirstLign = True
+# establishing the list of all recommendations
+submissionList = CSVinteraction.fromCSVtoList(targetsCSV)
+submissionList[0].append("track_ids")
 
-for row in crt :
-    if isFirstLign :
-        row.append("track_ids")
-        crs.writerow(row)
-        isFirstLign = False
-    else :
-        row.append(recommendations)
-        crs.writerow(row)
-        
-ft.close()
-fs.close() 
+for index in range (1, len(submissionList)) :
+    submissionList[index].append(recommendationsString)
+
+# writing in the submission file
+CSVinteraction.fromListToCSV(submissionList, submissionCSV)
